@@ -1,0 +1,43 @@
+---
+name: commit
+description: >-
+  Write commit messages and structure commits — imperative first line, when
+  to add a body, issue references, and one-file-one-commit grouping. Use when
+  creating a git commit after review has cleared, or when asked how to
+  split/group staged changes.
+---
+
+# Commits
+
+## Rules
+
+- First line: imperative, concise, states the effect of the change.
+  Conventional Commits format if the repo uses it.
+- Add a body only for non-obvious *why*, breaking changes, migration notes,
+  or linked issues — omit it otherwise. When a body exists, keep its why
+  paragraph and its what bullets non-redundant: each fact lives in one place,
+  and bullets never restate what `git show --stat`/`--name-status` already
+  shows (mechanical per-file enumeration) — cover only non-obvious groupings,
+  removal/rename rationale, or behavior changes.
+- Reference related issues/PRs at the end of the body, not inline.
+- One file, one commit — no partial/split commits on the same file. Group
+  files only when they implement a single code-level solution to a single
+  problem (e.g., a rule change plus the doc that defines it). If separating
+  the files would require reviewing them independently to understand
+  correctness, they're one commit. If the files address different problems
+  that happen to land together, split them — shared timing is not shared
+  logic.
+- Never author or co-author a commit as an agent. Don't add `Co-Authored-By`
+  trailers or otherwise attribute authorship to an AI agent, regardless of
+  default tooling behavior.
+- When describing what changed — for the message itself, a comparison to the
+  previous commit, or during a rebase/squash — diff against the actual
+  reference commit via git (e.g., `git diff <ref>`, `git show <ref>`). Never
+  rely on session/conversation memory alone: earlier changes may have
+  happened outside this session, and session context can miss or
+  misremember them.
+
+## Note
+
+Never commit without an explicit developer request — see `AGENTS.md`'s
+orchestration rule and this environment's git safety boundaries.
