@@ -1,8 +1,5 @@
 # Technical Strategy & Execution Rules
 
-Evaluate each case on its actual nature. Never default to a paradigm, pattern,
-or defense level without justifying fit to the specific problem.
-
 Detailed procedures for planning, implementation, code review, commits, and
 pull requests live in dedicated skills (`planning`, `implementation`,
 `review`, `commit`, `pull-requests`). This file holds the behavior that must
@@ -20,7 +17,9 @@ gets invoked.
   schema/data shape, or externally observable behavior, stop and invoke
   `planning` for developer approval. If it's confined to internal
   implementation detail with no such external effect, resolve it directly in
-  `implementation`.
+  `implementation` (e.g., renaming a local variable, adding a comment, or
+  fixing a typo needs no plan; changing a function's return type or a
+  persisted field's shape does).
 - Scope growth beyond an approved plan (new requirements, unplanned
   complexity, expanded blast radius) is always a stop-and-flag case, never a
   ship-and-note case. The `implementation` skill's "ship the lazy version"
@@ -34,7 +33,7 @@ gets invoked.
 - Code changes touching `docs/` content: update those docs same turn. Task
   isn't done until docs match code.
 - Changes to dependencies, commands, or project structure: update
-  `README.md` and `CONTRIBUTING.md` same turn.
+  `README.md` and `CONTRIBUTING.md` (if present) same turn.
 - Readiness feedback loop: if a failure or hallucination traces to
   missing/poor project documentation or context boundaries, say so and
   recommend the specific fix, unprompted.
@@ -55,17 +54,21 @@ gets invoked.
   over raw API calls, when available.
 - For code search or navigation, prioritize `ast-grep` over plain-text
   `grep` for precise AST-level matches and less context bloat.
+- Python3: run scripts and manage dependencies exclusively through `uv`
+  (`uv run`, `uv sync`, `uv add`) — never invoke `python3`/`pip`/`poetry`
+  directly.
 
 ## 5. Autonomous flow orchestration
 
 - Non-trivial implementation work starts from an approved plan: invoke
-  `planning` before `implementation`, unless guard duty (section 1)
+  `planning` before `implementation`, unless section 1's disambiguator
   determines the request is narrow enough to resolve directly in
   `implementation`.
-- After completing non-trivial implementation work, invoke `review`
-  automatically before reporting the task as done — it's a read-only pass,
-  so it doesn't need an explicit request.
-- Never invoke `commit` or `pull-requests` without an explicit developer
-  request, regardless of what `review` found — this environment's git
-  safety boundaries take precedence over this file's automation. Once
-  `review` clears, ask whether to proceed to `commit`.
+- After completing non-trivial implementation work, invoke
+  `agent-hardness:review` automatically before reporting the task as done —
+  it's a read-only pass, so it doesn't need an explicit request. Qualified
+  name, not bare `review`: a platform's own generic code-review command may
+  share that word and must not be picked up here instead.
+- Once `review` clears, ask whether to proceed to `commit` — draft the
+  message only after the developer agrees; `git add` and `git commit` run
+  only once the developer approves that drafted message.

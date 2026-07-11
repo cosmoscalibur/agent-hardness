@@ -36,6 +36,5 @@ description: >-
 
 ## Note
 
-This skill runs automatically after `implementation` completes, per
-`AGENTS.md`'s orchestration rule — it doesn't need to be requested explicitly
-in that flow.
+This skill is commonly invoked automatically right after `implementation`
+completes — it doesn't need to be requested explicitly in that flow.

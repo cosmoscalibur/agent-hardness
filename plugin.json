@@ -1,6 +1,6 @@
 {
   "name": "agent-hardness",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific skills for planning, implementation, review, commits, and pull requests. Integrates ast-grep structural search.",
   "author": {
     "name": "cosmoscalibur"

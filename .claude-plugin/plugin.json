@@ -1,0 +1,5 @@
+{
+  "name": "agent-hardness",
+  "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific coding methodology skills, plus the chrome-devtools MCP server.",
+  "version": "0.2.1"
+}

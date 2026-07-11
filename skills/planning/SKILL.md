@@ -21,6 +21,9 @@ without explicit developer approval on the plan.
   `git status -sb` or `git log HEAD..origin/<default>`). A plan built on
   stale local state can target code that's already changed upstream.
 - The plan states: scope, key design decisions, open ambiguities.
+- Evaluate each design decision on the problem's actual nature — never
+  default to a paradigm, pattern, or defense level without justifying fit;
+  state that justification as one of the plan's key design decisions.
 - Flag which decisions need developer consultation (architecture trade-offs,
   contract changes, business-rule ambiguity) vs. which are autonomous (no
   impact on contract or observable behavior). Don't mislabel either

@@ -3,8 +3,9 @@ name: commit
 description: >-
   Write commit messages and structure commits — imperative first line, when
   to add a body, issue references, and one-file-one-commit grouping. Use when
-  creating a git commit after review has cleared, or when asked how to
-  split/group staged changes.
+  creating a git commit after review has cleared, when asked to draft or
+  propose a commit message for approval, or when asked how to split/group
+  staged changes.
 ---
 
 # Commits
@@ -39,5 +40,8 @@ description: >-
 
 ## Note
 
-Never commit without an explicit developer request — see `AGENTS.md`'s
-orchestration rule and this environment's git safety boundaries.
+This skill governs drafting the message — invoke it for any request to
+commit, draft, or propose one, not just the literal word "commit". Running
+`git add`/`git commit` is a separate step: never run them until the
+developer approves the drafted message, per this environment's git safety
+boundaries.

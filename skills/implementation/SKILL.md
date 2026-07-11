@@ -55,9 +55,10 @@ level without justifying fit.
   Shortest working diff, fewest files — but only after understanding the
   problem. The smallest change in the wrong place is a second bug.
 - Resolution ladder — selects the technique for a task already accepted as
-  valid and in scope. It never substitutes for guard duty (see `AGENTS.md`)
-  on whether a request itself should proceed. Stop at the first rung that
-  holds:
+  valid and in scope. It never substitutes for confirming the request
+  itself should proceed — ambiguous scope, skipped tests, or an invented
+  business rule are reasons to stop and ask, not inputs to the ladder. Stop
+  at the first rung that holds:
   1. Does this need to exist? Speculative → skip, say so in one line.
   2. Already in this codebase? Reuse it. Look before writing.
   3. Stdlib covers it? Use stdlib.
@@ -120,5 +121,5 @@ level without justifying fit.
 
 ## Handoff
 
-On completion, `review` runs automatically per `AGENTS.md`'s orchestration
-rule — no need to request it explicitly.
+On completion, `review` typically runs automatically — no need to request
+it explicitly.

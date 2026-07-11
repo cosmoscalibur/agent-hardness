@@ -29,6 +29,5 @@ description: >-
 
 ## Note
 
-Never open a pull request without an explicit developer request — see
-`AGENTS.md`'s orchestration rule and this environment's git safety
-boundaries.
+Never open a pull request without an explicit developer request, per this
+environment's git safety boundaries.
