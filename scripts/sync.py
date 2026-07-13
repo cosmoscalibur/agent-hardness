@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Install this plugin's rules and skills into a target IDE.
+"""Install this plugin's rules, skills, and MCP/LSP plugins into Claude Code.
 
-Run through uv, never a bare interpreter: `uv run scripts/sync.py <ide>`.
+Run with Python 3 (stdlib only, no dependencies): `python3 scripts/sync.py`.
+
+Antigravity needs no script — it installs directly from the repo with
+`agy plugin install <repo>` (see README "Global Setup").
 """
 
-import argparse
 import json
 import shutil
 import subprocess
@@ -15,15 +17,14 @@ HOME = Path.home()
 
 PLUGIN_ID = "agent-hardness@agent-hardness"
 
-# Official plugins installed alongside this one - see docs/mcp-servers.md.
-CLAUDE_PLUGINS = ["chrome-devtools-mcp@claude-plugins-official"]
-
-
-def sync_antigravity() -> None:
-    # Antigravity auto-discovers rules/ and skills/ by convention from
-    # plugin.json's location, and ships its own native Chrome DevTools
-    # integration - see docs/mcp-servers.md - so no MCP setup is needed here.
-    subprocess.run(["agy", "plugin", "install", str(REPO_ROOT)], check=True)
+# Official plugins installed alongside this one: the chrome-devtools MCP
+# server plus the TypeScript, Pyright, and rust-analyzer language servers.
+CLAUDE_PLUGINS = [
+    "chrome-devtools-mcp@claude-plugins-official",
+    "typescript-lsp@claude-plugins-official",
+    "pyright-lsp@claude-plugins-official",
+    "rust-analyzer-lsp@claude-plugins-official",
+]
 
 
 def _is_plugin_installed(plugin_id: str) -> bool:
@@ -36,7 +37,7 @@ def _is_plugin_installed(plugin_id: str) -> bool:
     return any(p["id"] == plugin_id for p in json.loads(result.stdout))
 
 
-def sync_claude() -> None:
+def main() -> None:
     claude_dir = HOME / ".claude"
     claude_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(REPO_ROOT / "rules" / "AGENTS.md", claude_dir / "CLAUDE.md")
@@ -59,19 +60,6 @@ def sync_claude() -> None:
         subprocess.run(["claude", "plugin", "install", PLUGIN_ID], check=True)
     for plugin in CLAUDE_PLUGINS:
         subprocess.run(["claude", "plugin", "install", plugin], check=True)
-
-
-SYNC_FUNCS = {
-    "antigravity": sync_antigravity,
-    "claude": sync_claude,
-}
-
-
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("ide", choices=sorted(SYNC_FUNCS))
-    args = parser.parse_args()
-    SYNC_FUNCS[args.ide]()
 
 
 if __name__ == "__main__":

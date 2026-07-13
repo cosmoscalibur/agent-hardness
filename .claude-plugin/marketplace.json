@@ -7,7 +7,7 @@
     {
       "name": "agent-hardness",
       "source": "./",
-      "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific coding methodology skills, plus the chrome-devtools MCP server."
+      "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific coding methodology skills (planning, implementation, review, commits, pull requests) with ast-grep structural search. Its Claude sync also installs the chrome-devtools MCP server and TypeScript/Python/Rust language servers."
     }
   ]
 }

@@ -32,12 +32,21 @@ level without justifying fit.
   doesn't count. YAGNI by default.
 - Scale error handling to real impact radius (internal single-consumer code
   vs. exposed endpoint or sensitive data).
+- Match a script's complexity to its impact radius and lifespan. A
+  self-contained, single-skill, internal-use script not exposed to untrusted
+  input needs no help text, defensive input trimming, or explicit error
+  handling — a native traceback on failure is sufficient signal. Add those
+  only when blast radius or reuse justifies them.
 - Parse, don't validate, only at real trust boundaries: external user input,
   external API responses, LLM output before downstream use. Parse into a type
   that makes invalid state unrepresentable, once, at the boundary.
 - Outside those boundaries: don't re-validate what type, caller contract, or
   prior flow already guarantees. Don't create a type for trivial internal
   structures just to apply the pattern.
+- The trust boundary is the external system, not the agent's own workspace:
+  local, reversible actions inside a version-controlled repo (editing or
+  deleting a file) need no pre- or post-action validation — version control is
+  the safety net.
 - Fail fast on programmer invariants and genuinely unexpected states. Never
   silently absorb a bug signal.
 - Never fail-fast where an architectural fallback already exists (human
@@ -100,11 +109,13 @@ level without justifying fit.
 
 ## Verbosity
 
-- Comment only what code can't express itself: design decisions, trade-offs,
-  exceptions, non-obvious business context.
+- Documentation follows `AGENTS.md` §2's layer rule: comments carry the *why*
+  (design decisions, trade-offs, exceptions, non-obvious context), never a
+  restatement of what the code says (e.g., no comment listing the elements of
+  a named list being iterated); docstrings state the contract, not a paraphrase
+  of the function name.
 - Keep names clear and concise, per the language's and codebase's own
   convention.
-- No docstrings that just restate the function name in prose.
 
 ## Completion checklist
 

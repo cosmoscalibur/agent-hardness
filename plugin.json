@@ -1,7 +1,7 @@
 {
   "name": "agent-hardness",
-  "version": "0.2.1",
-  "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific skills for planning, implementation, review, commits, and pull requests. Integrates ast-grep structural search.",
+  "version": "0.3.0",
+  "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific coding methodology skills (planning, implementation, review, commits, pull requests) with ast-grep structural search. Its Claude sync also installs the chrome-devtools MCP server and TypeScript/Python/Rust language servers.",
   "author": {
     "name": "cosmoscalibur"
   },

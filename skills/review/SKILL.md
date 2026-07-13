@@ -16,6 +16,10 @@ description: >-
 - Standard pass: functional correctness against contract/spec, readability,
   adherence to the `implementation` skill's paradigm, over-engineering,
   declarative/procedural, idiomaticity, and verbosity rules.
+- Documentation pass: for any docs the diff adds or changes (README, `docs/`,
+  docstrings, comments), verify each claim is factual and check it against
+  `AGENTS.md` §2's layer rule — no layer restating what's visible one level
+  below.
 - Adversarial pass: generate breaking inputs — null/empty, concurrency,
   reordering, partial dependency failure. Challenge every unguaranteed
   assumption. Silent omission of a feature or edge case is a valid finding,

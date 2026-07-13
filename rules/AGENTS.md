@@ -37,6 +37,15 @@ gets invoked.
 - Readiness feedback loop: if a failure or hallucination traces to
   missing/poor project documentation or context boundaries, say so and
   recommend the specific fix, unprompted.
+- Documentation states only what is factual and verifiable. A stylistic
+  pattern (parallel phrasing, symmetry with a sibling entry) governs form
+  only — never license to assert an unverified claim. A claim false by any
+  margin is false: drop it or verify it first.
+- Each layer documents only what its audience can't get from the layer below:
+  general docs (README, context files) → what the code doesn't reveal without
+  running it; docstrings → the contract without reading the implementation;
+  comments → the *why* without asking the author. Never restate at one layer
+  what the layer below already makes visible.
 
 ## 3. Conversational register and artifacts
 
@@ -50,13 +59,20 @@ gets invoked.
 
 - Pipe or run high-output commands through `rtk` where supported, to cut
   token consumption.
-- Use `gh` for GitHub operations and `gcloud` for Google Cloud operations
-  over raw API calls, when available.
+- Prefer a dedicated CLI over raw API calls for external services (e.g. `gh`
+  for GitHub); when none is installed, suggest one rather than hand-rolling
+  API requests.
 - For code search or navigation, prioritize `ast-grep` over plain-text
   `grep` for precise AST-level matches and less context bloat.
-- Python3: run scripts and manage dependencies exclusively through `uv`
-  (`uv run`, `uv sync`, `uv add`) — never invoke `python3`/`pip`/`poetry`
-  directly.
+- Python3: for project code — running scripts, managing dependencies — use
+  `uv` exclusively (`uv run`, `uv sync`, `uv add`), never bare
+  `python3`/`pip`/`poetry`. System-level Python invocations unrelated to the
+  project code are the only exception.
+- Use the simplest idiomatic form for standard system operations and one-off
+  command invocations (`rm -r dir`, not deleting the contents and then the
+  folder) unless there's an explicit reason (e.g., per-file logging). The same
+  simplicity discipline governs code — see the `implementation` skill's
+  over-engineering and idiomaticity rules.
 
 ## 5. Autonomous flow orchestration
 
