@@ -33,5 +33,7 @@ docstrings/comments) require no version bump.
 ## Documentation
 
 `docs/` is the maintenance reference for this plugin and must stay current.
-In particular, update `docs/installation.md` in the same change whenever
-`scripts/sync.py` or the install flow changes.
+In particular, update `docs/rules-and-skills.md` and `docs/mcp.md` in the same
+change whenever `scripts/sync.py` or the install flow changes,
+`docs/lsp.md` whenever `.lsp.json` changes, and `docs/hooks.md` whenever
+`hooks/` or a hook script changes.

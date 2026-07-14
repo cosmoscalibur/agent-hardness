@@ -1,67 +1,20 @@
 # Agent Hardness Plugin
 
-Antigravity plugin that packages agent readiness evaluation, a global
-behavioral/tooling ruleset, and stage-specific coding methodology skills
+Antigravity and Claude Code plugin that packages agent readiness evaluation, a
+global behavioral/tooling ruleset, and stage-specific coding methodology skills
 (planning, implementation, review, commit, pull requests) into a single global
-package.
+package. On Claude Code it also wires up language servers, a Ruff auto-format
+hook, and the chrome-devtools MCP server.
 
-## What's Included
-
-### Rules (always-on)
-
-A single `AGENTS.md` file holds the behavior that must apply regardless of which
-skill is active: guard duty and scope control, documentation currency,
-conversational register, CLI tooling preferences (see
-[CLI Tools Required](#cli-tools-required) below), and the rules for when each
-workflow skill gets invoked in an autonomous flow (e.g., running `review`
-automatically once `implementation` completes). Detailed, stage-specific
-procedures live in the `planning`, `implementation`, `review`, `commit`, and
-`pull-requests` skills below instead of in this file.
-
-`AGENTS.md` is a consolidated file rather than a set of separate per-topic rule
-files, so origins are not tracked per rule — they are noted here as inspiration
-instead:
-
-- In-house practices, refined by systematically interrogating Claude about its
-  training biases at each stage of the development flow and writing
-  counterweight rules against them.
-- [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)
-  — Karpathy-inspired execution discipline.
-- [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) —
-  YAGNI-driven decision ladder.
-- [juliusbrussee/caveman](https://github.com/juliusbrussee/caveman) — concise,
-  professional prose compression.
-
-### Skills
-
-| Skill             | Source                                                          | License | Description                                                                                                                                                                 |
-| ----------------- | --------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `agent-readiness` | [Factory AI](https://www.factory.ai/agent-readiness)            | MIT     | Scores a repository's readiness for autonomous AI agent development across 9 pillars with a phased plan; adapted from Factory AI's framework to modern tooling conventions. |
-| `ast-grep`        | [ast-grep/agent-skill](https://github.com/ast-grep/agent-skill) | MIT     | Guides structural, AST-based code search and rule authoring; used as-is, no adaptation.                                                                                     |
-| `planning`        | Own                                                             | MIT     | Produces the pre-implementation plan: scope, design decisions, and which of them need developer approval vs. autonomous resolution.                                         |
-| `implementation`  | Own                                                             | MIT     | Governs how code gets written against an approved plan: paradigm choice, over-engineering discipline, idiomaticity, verbosity, and the task completion checklist.           |
-| `review`          | Own                                                             | MIT     | Runs standard, adversarial, over-engineering, and performance review passes; auto-invoked after `implementation`.                                                           |
-| `commit`          | Own                                                             | MIT     | Governs commit message structure and file grouping; never runs without an explicit developer request.                                                                       |
-| `pull-requests`   | Own                                                             | MIT     | Governs PR title/body conventions; never runs without an explicit developer request.                                                                                        |
-
-### MCP & LSP (Claude Code)
-
-`scripts/sync.py` installs these official plugins from the
-`claude-plugins-official` marketplace alongside this one; they are specific to
-Claude Code. On Antigravity the repo manages only the core rules and skills —
-MCP and LSP are not set up there. This flow is developed and tested against
-Claude Code only.
-
-| Plugin                | Kind | Source                    | Purpose                                                                                                          |
-| --------------------- | ---- | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `chrome-devtools-mcp` | MCP  | `claude-plugins-official` | Drive and inspect a live Chrome browser (automation, performance traces, network/console); requires Chrome 144+. |
-| `typescript-lsp`      | LSP  | `claude-plugins-official` | TypeScript / JavaScript language server.                                                                         |
-| `pyright-lsp`         | LSP  | `claude-plugins-official` | Python language server (Pyright).                                                                                |
-| `rust-analyzer-lsp`   | LSP  | `claude-plugins-official` | Rust language server (rust-analyzer).                                                                            |
+The CLI tools and language servers below are prerequisites — install them
+first, then install the hardness itself ([Installation](#installation)). The
+detailed inventory of what the plugin contains is in
+[What's Included](#whats-included) and the [`docs/`](docs/) reference.
 
 ## CLI Tools Required
 
-Installation is left to the developer's own environment and package manager.
+Installation is left to the developer's own environment and package manager;
+[`docs/cli-tools.md`](docs/cli-tools.md) has concrete install commands.
 
 | Tool                                             | Purpose                                                                | Install                                                                              |
 | ------------------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
@@ -69,9 +22,30 @@ Installation is left to the developer's own environment and package manager.
 | [RTK](https://github.com/rtk-ai/rtk)             | Terminal output compression (60-90% fewer tokens)                      | [Repository](https://github.com/rtk-ai/rtk)                                          |
 | [gh](https://cli.github.com/)                    | GitHub integration and ADRs                                            | [Installation guide](https://github.com/cli/cli#installation)                        |
 | [mergiraf](https://mergiraf.org/)                | Syntax-aware git merge driver — auto-resolves AST-equivalent conflicts | [Installation guide](https://mergiraf.org/installation.html)                         |
-| [uv](https://github.com/astral-sh/uv)            | Run/manage Python3 (`scripts/sync.py`, any Python)                     | [Installation guide](https://docs.astral.sh/uv/getting-started/installation/)        |
+| [uv](https://github.com/astral-sh/uv)            | Run/manage Python3 (`scripts/sync.py`, the Ruff hook, any Python)      | [Installation guide](https://docs.astral.sh/uv/getting-started/installation/)        |
 
-## Global Setup
+### Language Servers (Claude Code)
+
+The plugin declares its language servers internally (in `.lsp.json`); the
+binaries are a prerequisite you install **before** the Claude setup. See
+[`docs/lsp.md`](docs/lsp.md) for the install command for each and how to add a
+new server.
+
+| Language          | Server                        | Binary                        |
+| ----------------- | ----------------------------- | ----------------------------- |
+| Python            | basedpyright                  | `basedpyright-langserver`     |
+| Markdown          | marksman                      | `marksman`                    |
+| Bash              | bash-language-server          | `bash-language-server`        |
+| TypeScript / JS   | typescript-language-server    | `typescript-language-server`  |
+| HTML              | vscode-langservers-extracted  | `vscode-html-language-server` |
+| CSS / SCSS / Less | vscode-langservers-extracted  | `vscode-css-language-server`  |
+| Rust              | rust-analyzer                 | `rust-analyzer`               |
+
+Python formatting and lint-autofix run through a Ruff `PostToolUse` hook, not a
+second LSP — Claude Code allows one language server per language, and the Python
+LSP doesn't format. See [`docs/hooks.md`](docs/hooks.md).
+
+## Installation
 
 ### rtk
 
@@ -120,14 +94,13 @@ needed):
 ### Claude Code
 
 ```bash
-python3 scripts/sync.py
+uv run scripts/sync.py
 ```
 
-Copies `rules/AGENTS.md` to `~/.claude/CLAUDE.md` and installs the plugin's
-skills plus the MCP/LSP plugins listed above. It is idempotent — re-run after
-every update to this repo, then restart Claude Code to apply. See
-[`docs/installation.md`](docs/installation.md) for what it does internally and
-for the manual (script-free) install.
+Copies `rules/AGENTS.md` to `~/.claude/CLAUDE.md` and installs the plugin
+(skills plus the bundled language servers and Ruff hook) and the chrome-devtools
+MCP server. Re-run after every update to this repo, then restart Claude Code to
+apply.
 
 ### Antigravity
 
@@ -141,6 +114,63 @@ agy plugin install /path/to/agent-hardness
 # From GitHub
 agy plugin install https://github.com/cosmoscalibur/agent-hardness
 ```
+
+## What's Included
+
+### Rules (always-on)
+
+A single consolidated `rules/AGENTS.md` holds the behavior that applies
+regardless of which skill is active — guard duty and scope control,
+documentation currency, conversational register, CLI tooling preferences, and
+the rules for when each workflow skill is invoked. Detailed, stage-specific
+procedures live in the skills instead.
+
+Origins are not tracked per rule — they are noted here as inspiration instead:
+
+- In-house practices, refined by systematically interrogating Claude about its
+  training biases at each stage of the development flow and writing
+  counterweight rules against them.
+- [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)
+  — Karpathy-inspired execution discipline.
+- [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) —
+  YAGNI-driven decision ladder.
+- [juliusbrussee/caveman](https://github.com/juliusbrussee/caveman) — concise,
+  professional prose compression.
+
+See [`docs/rules-and-skills.md`](docs/rules-and-skills.md) for how to extend the
+ruleset and add a skill.
+
+### Skills
+
+| Skill             | Source                                                          | License | Description                                                                                                                                                                 |
+| ----------------- | --------------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agent-readiness` | [Factory AI](https://www.factory.ai/agent-readiness)            | MIT     | Scores a repository's readiness for autonomous AI agent development across 9 pillars with a phased plan; adapted from Factory AI's framework to modern tooling conventions. |
+| `ast-grep`        | [ast-grep/agent-skill](https://github.com/ast-grep/agent-skill) | MIT     | Guides structural, AST-based code search and rule authoring; used as-is, no adaptation.                                                                                     |
+| `planning`        | Own                                                             | MIT     | Produces the pre-implementation plan: scope, design decisions, and which of them need developer approval vs. autonomous resolution.                                         |
+| `implementation`  | Own                                                             | MIT     | Governs how code gets written against an approved plan: paradigm choice, over-engineering discipline, idiomaticity, verbosity, and the task completion checklist.           |
+| `review`          | Own                                                             | MIT     | Runs standard, adversarial, over-engineering, and performance review passes; auto-invoked after `implementation`.                                                           |
+| `commit`          | Own                                                             | MIT     | Governs commit message structure and file grouping; never runs without an explicit developer request.                                                                       |
+| `pull-requests`   | Own                                                             | MIT     | Governs PR title/body conventions; never runs without an explicit developer request.                                                                                        |
+
+See [`docs/rules-and-skills.md`](docs/rules-and-skills.md) for the skill
+authoring format and how each client (Antigravity vs. Claude Code) deploys rules
+and skills.
+
+### MCP & LSP (Claude Code)
+
+Claude Code-only, and set up by `scripts/sync.py`. On Antigravity the repo
+manages only rules and skills (full plugin, no MCP/LSP); use Antigravity's
+native Chrome DevTools instead of the MCP server.
+
+- **MCP**: `chrome-devtools-mcp` (official `claude-plugins-official` plugin) —
+  drive and inspect a live Chrome browser; requires Chrome 144+. See
+  [`docs/mcp.md`](docs/mcp.md).
+- **LSP**: language servers for Python, Markdown, Bash, TypeScript/JavaScript,
+  HTML/CSS, and Rust, declared internally in `.lsp.json`. See
+  [`docs/lsp.md`](docs/lsp.md) and the
+  [Language Servers](#language-servers-claude-code) prerequisites above.
+- **Hook**: a Ruff `PostToolUse` hook formats and lint-fixes Python on edit. See
+  [`docs/hooks.md`](docs/hooks.md).
 
 ## Design Decisions
 

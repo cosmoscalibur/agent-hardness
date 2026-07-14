@@ -1,5 +1,5 @@
 {
   "name": "agent-hardness",
-  "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific coding methodology skills (planning, implementation, review, commits, pull requests) with ast-grep structural search. Its Claude sync also installs the chrome-devtools MCP server and TypeScript/Python/Rust language servers.",
-  "version": "0.3.0"
+  "description": "Agent readiness evaluation, a global behavioral/tooling ruleset, and stage-specific coding methodology skills (planning, implementation, review, commit, pull requests) with ast-grep structural search. On Claude Code it adds bundled language servers (Python, Markdown, Bash, JS/TS, HTML/CSS, Rust), a Ruff auto-format hook, and the chrome-devtools MCP server.",
+  "version": "0.3.1"
 }
