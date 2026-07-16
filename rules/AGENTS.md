@@ -63,7 +63,15 @@ gets invoked.
   for GitHub); when none is installed, suggest one rather than hand-rolling
   API requests.
 - For code search or navigation, prioritize `ast-grep` over plain-text
-  `grep` for precise AST-level matches and less context bloat.
+  `grep` for precise AST-level matches and less context bloat. Disambiguator:
+  if every literal spelling of the target isn't known in advance — an
+  attribute access on an unknown base (`cfg.x`, `app.config.x`,
+  `app.builder.config.x`), a family of method names (`visit_note`,
+  `visit_admonition`, ...) — reach for a structural pattern (`$X.field`,
+  `def visit_$NAME`) instead of enumerating guesses with `grep`; a single
+  known literal string is still a plain `grep` case. Also prefer it when a
+  text match could be a false positive — inside a comment/string, or reached
+  only through an alias.
 - Python3: for project code — running scripts, managing dependencies — use
   `uv` exclusively (`uv run`, `uv sync`, `uv add`), never bare
   `python3`/`pip`/`poetry`. System-level Python invocations unrelated to the

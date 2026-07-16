@@ -26,8 +26,6 @@ orchestration). A rule addition must fit that form:
 - If the guidance is a stage-specific procedure rather than always-on behavior,
   it belongs in a skill, not here.
 
-Editing `rules/AGENTS.md` is a patch bump (see `CLAUDE.md`).
-
 ## Adding a skill
 
 A skill is a directory under `skills/` whose form is fixed:
@@ -50,9 +48,6 @@ A skill is a directory under `skills/` whose form is fixed:
   reference material into `resources/`/`references/`. `claude plugin details`
   reports a skill's projected always-on and on-invoke token cost.
 - Register the skill in the README's *Skills* table.
-
-Adding a skill is a minor bump; editing an existing skill's text is a patch
-(see `CLAUDE.md`).
 
 ## Per-client deployment
 

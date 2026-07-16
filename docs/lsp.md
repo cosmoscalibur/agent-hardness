@@ -68,9 +68,6 @@ Optional fields Claude Code also accepts: `transport` (`stdio` default or
    and restart Claude Code; edit a file of that type and confirm the server
    attaches (diagnostics/hover appear).
 
-Version impact: editing `.lsp.json` is a patch bump (see the repo's `CLAUDE.md`
-versioning rules).
-
 ## Installing the servers
 
 Install each server with its language's own package manager. Only servers

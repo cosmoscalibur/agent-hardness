@@ -1,18 +1,19 @@
 # Hooks (Claude Code)
 
-This plugin ships one hook: a `PostToolUse` hook that formats and lint-fixes
-Python files with Ruff after each edit. Hooks are set up on Claude Code only.
-They live entirely under [`hooks/`](../hooks/) — `hooks.json` plus the
-`ruff_fix.py` it invokes — so the whole hook installs with the plugin.
-Antigravity supports hooks too, but this flow does not target it.
+This plugin ships two `PostToolUse` hooks, one per language it auto-fixes:
+Ruff for Python, rumdl for Markdown. Hooks are set up on Claude Code only.
+They live entirely under [`hooks/`](../hooks/) — `hooks.json` plus the script
+each entry invokes — so both install with the plugin. Antigravity supports
+hooks too, but this flow does not target it.
 
 ## Why a hook and not a second LSP
 
-Claude Code runs **one language server per language**. The Python LSP
-(`basedpyright`) gives type intelligence but does not format code or apply lint
-autofixes, and a second Python LSP can't be added to cover that. Ruff fills the
-gap as a `PostToolUse` hook: after Claude writes or edits a `.py`/`.pyi` file,
-the hook runs `ruff check --fix` then `ruff format` on it.
+Claude Code runs **one language server per language**. A language's LSP can
+give type/structure intelligence without covering formatting or lint-autofix
+(`basedpyright` for Python, `marksman` for Markdown do this), and a second LSP
+per language can't be added to fill that gap. A `PostToolUse` hook fills it
+instead: after Claude writes or edits a matching file, the hook runs the
+language's linter/formatter on it.
 
 ## Structure
 
@@ -23,13 +24,13 @@ version-bumped manifest). The shape mirrors Claude Code's user hooks:
 ```json
 {
   "hooks": {
-    "PostToolUse": [
+    "<Event>": [
       {
-        "matcher": "Write|Edit",
+        "matcher": "<regex over tool names>",
         "hooks": [
           {
             "type": "command",
-            "command": "uv run --no-project \"${CLAUDE_PLUGIN_ROOT}/hooks/ruff_fix.py\""
+            "command": "uv run --no-project \"${CLAUDE_PLUGIN_ROOT}/hooks/<script>.py\""
           }
         ]
       }
@@ -38,12 +39,12 @@ version-bumped manifest). The shape mirrors Claude Code's user hooks:
 }
 ```
 
-- **Event** (`PostToolUse`) fires after a tool call succeeds. Other lifecycle
-  events exist (`PreToolUse`, `SessionStart`, `UserPromptSubmit`, …).
+- **Event** (e.g. `PostToolUse`, which fires after a tool call succeeds) —
+  other lifecycle events exist (`PreToolUse`, `SessionStart`,
+  `UserPromptSubmit`, …).
 - **`matcher`** is a regex over **tool names**, not file paths — `Write|Edit`
   matches both edit tools. There is no way to match on the edited file's type
-  here, so a hook that should act on one language must receive every edit and
-  filter by extension itself (which `ruff_fix.py` does).
+  here, so each hook script filters by extension itself.
 - **`hooks[].type: "command"`** runs a shell command; Claude Code passes the
   tool payload as JSON on its stdin. Python is invoked through `uv run` per the
   project's `uv`-only rule, and `--no-project` keeps the run isolated from any
@@ -51,26 +52,29 @@ version-bumped manifest). The shape mirrors Claude Code's user hooks:
 - **`${CLAUDE_PLUGIN_ROOT}`** resolves to the installed plugin's root directory
   — always reference bundled files through it, never a relative path.
 
-[`hooks/ruff_fix.py`](../hooks/ruff_fix.py) (Python stdlib) reads the stdin
-payload, takes `tool_input.file_path`, and returns immediately unless it's a
-`.py`/`.pyi` file. For Python it runs Ruff via `uvx`, which fetches Ruff on
-demand (cached after first use), so uv is the only prerequisite. Ruff runs with
-`check=False`, so a lint failure is swallowed rather than blocking the edit.
+See [`hooks/hooks.json`](../hooks/hooks.json) for the current entries.
+
+## Script pattern
+
+Every hook script (Python stdlib, no dependencies) follows the same shape:
+read the stdin payload, take `tool_input.file_path`, return immediately unless
+it matches the target extension, then run the language's tool via `uvx`
+(fetches it from PyPI on demand, cached after first use — so `uv` is the only
+prerequisite) to fix and format the file. Both calls run with `check=False`: a
+lint failure is swallowed rather than blocking the edit, and any violation the
+tool can't auto-fix is left for `implementation`/`review` to catch — the hook
+never surfaces it back to the agent.
+
+Two hooks currently follow this pattern:
+
+| Script | Extension | Tool | Manual install |
+| --- | --- | --- | --- |
+| [`hooks/ruff_fix.py`](../hooks/ruff_fix.py) | `.py`/`.pyi` | [Ruff](https://docs.astral.sh/ruff/) | `uv tool install ruff` |
+| [`hooks/rumdl_fix.py`](../hooks/rumdl_fix.py) | `.md` | [rumdl](https://github.com/rvben/rumdl) | `uv tool install rumdl` |
 
 ### Adding another hook
 
 Add an entry under the appropriate event in `hooks/hooks.json`, put any script
 in `hooks/` (not `scripts/`, which is for one-off tooling like the installer),
 and reference it via `${CLAUDE_PLUGIN_ROOT}`. Invoke Python through `uv run` and
-keep the script stdlib-only so it needs no environment setup. Editing `hooks/`
-is a patch bump (see the repo's `CLAUDE.md` versioning rules).
-
-## Ruff
-
-The hook runs Ruff through `uvx` (`uv tool run`), so nothing beyond `uv` needs
-installing — the first run fetches Ruff into uv's cache. To also have `ruff` on
-your `PATH` for manual use, install it as a uv tool:
-
-```zsh
-uv tool install ruff
-```
+keep the script stdlib-only so it needs no environment setup.

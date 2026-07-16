@@ -3,8 +3,8 @@
 Antigravity and Claude Code plugin that packages agent readiness evaluation, a
 global behavioral/tooling ruleset, and stage-specific coding methodology skills
 (planning, implementation, review, commit, pull requests) into a single global
-package. On Claude Code it also wires up language servers, a Ruff auto-format
-hook, and the chrome-devtools MCP server.
+package. On Claude Code it also wires up language servers, Ruff and rumdl
+auto-format hooks, and the chrome-devtools MCP server.
 
 The CLI tools and language servers below are prerequisites — install them
 first, then install the hardness itself ([Installation](#installation)). The
@@ -98,9 +98,9 @@ uv run scripts/sync.py
 ```
 
 Copies `rules/AGENTS.md` to `~/.claude/CLAUDE.md` and installs the plugin
-(skills plus the bundled language servers and Ruff hook) and the chrome-devtools
-MCP server. Re-run after every update to this repo, then restart Claude Code to
-apply.
+(skills, the bundled language servers, the Ruff/rumdl hooks, and — as a
+declared dependency — the chrome-devtools MCP server). Re-run after every
+update to this repo, then restart Claude Code to apply.
 
 ### Antigravity
 
@@ -163,14 +163,15 @@ manages only rules and skills (full plugin, no MCP/LSP); use Antigravity's
 native Chrome DevTools instead of the MCP server.
 
 - **MCP**: `chrome-devtools-mcp` (official `claude-plugins-official` plugin) —
-  drive and inspect a live Chrome browser; requires Chrome 144+. See
-  [`docs/mcp.md`](docs/mcp.md).
+  drive and inspect a live Chrome browser; requires Chrome 144+. Declared as a
+  plugin `dependencies` entry, so it installs automatically with
+  `agent-hardness`. See [`docs/mcp.md`](docs/mcp.md).
 - **LSP**: language servers for Python, Markdown, Bash, TypeScript/JavaScript,
   HTML/CSS, and Rust, declared internally in `.lsp.json`. See
   [`docs/lsp.md`](docs/lsp.md) and the
   [Language Servers](#language-servers-claude-code) prerequisites above.
-- **Hook**: a Ruff `PostToolUse` hook formats and lint-fixes Python on edit. See
-  [`docs/hooks.md`](docs/hooks.md).
+- **Hooks**: `PostToolUse` hooks format and lint-fix Python (Ruff) and
+  Markdown (rumdl) on edit. See [`docs/hooks.md`](docs/hooks.md).
 
 ## Design Decisions
 

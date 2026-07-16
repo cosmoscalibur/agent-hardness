@@ -24,8 +24,17 @@ Bump level by change type:
 | `scripts/` — removes a flag/option | minor |
 | `scripts/` — supports a new option/flag | minor |
 | `scripts/` — no functional change / bug fix | patch |
+| `hooks/` — new hook or hook script change | patch |
+| `plugin.json` `dependencies` — add/remove a declared plugin dependency | patch |
+| `.lsp.json` — new server or config change | patch |
 
 When a single change spans several rows, the highest bump wins.
+
+The bump is per session of work, not per edit or per turn: once a version has
+been bumped for the change under development, follow-up edits that refine,
+fix, or correct that same in-progress change (e.g. a review finding) reuse
+the already-bumped version instead of bumping again. Only a genuinely new,
+separate change gets its own bump.
 
 Documentation-only changes (`README.md`, `CLAUDE.md`, `docs/`, and code
 docstrings/comments) require no version bump.

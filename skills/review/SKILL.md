@@ -23,7 +23,9 @@ description: >-
 - Adversarial pass: generate breaking inputs — null/empty, concurrency,
   reordering, partial dependency failure. Challenge every unguaranteed
   assumption. Silent omission of a feature or edge case is a valid finding,
-  same as silently wrong code.
+  same as silently wrong code. When the diff changes a pattern that also
+  appears elsewhere in the codebase, confirm full coverage with a structural
+  search (ast-grep) rather than eyeballing the diff — see `AGENTS.md` §4.
 - Over-engineering pass: flag excess, not just absence, per the
   `implementation` skill.
 - Performance pass, always run: algorithmic complexity, N+1 queries,
@@ -37,8 +39,3 @@ description: >-
 - Report lint violations. Never silence, suppress, or auto-ignore one.
 - If context is insufficient for a given axis, say so explicitly. Never skip
   it silently.
-
-## Note
-
-This skill is commonly invoked automatically right after `implementation`
-completes — it doesn't need to be requested explicitly in that flow.

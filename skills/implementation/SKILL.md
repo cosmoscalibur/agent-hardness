@@ -69,7 +69,10 @@ level without justifying fit.
   business rule are reasons to stop and ask, not inputs to the ladder. Stop
   at the first rung that holds:
   1. Does this need to exist? Speculative → skip, say so in one line.
-  2. Already in this codebase? Reuse it. Look before writing.
+  2. Already in this codebase? Reuse it. Look before writing — for
+     multi-site reuse checks or edits (rename, signature change, replacing a
+     call pattern), confirm every real site with a structural search
+     (ast-grep) first — see `AGENTS.md` §4.
   3. Stdlib covers it? Use stdlib.
   4. Native platform feature covers it (HTML input type, CSS, DB constraint)?
      Use that.
@@ -129,8 +132,3 @@ level without justifying fit.
   apply silently.
 - At task close: plan approved, types/tests/docs consistent and current. Any
   gap is declared debt, not omitted.
-
-## Handoff
-
-On completion, `review` typically runs automatically — no need to request
-it explicitly.

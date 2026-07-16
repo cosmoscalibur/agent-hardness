@@ -12,12 +12,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 HOME = Path.home()
 
-# This plugin (directory-sourced) plus the official chrome-devtools MCP server.
-# Both install and update the same way once their marketplaces are registered.
-PLUGINS = [
-    "agent-hardness@agent-hardness",
-    "chrome-devtools-mcp@claude-plugins-official",
-]
+PLUGIN_ID = "agent-hardness@agent-hardness"
 
 
 def _installed_plugin_ids() -> set:
@@ -41,11 +36,10 @@ def main() -> None:
     )
 
     # `install` is idempotent but `update` fails if the plugin was never
-    # installed - branch per plugin so both stay current on re-runs.
-    installed = _installed_plugin_ids()
-    for plugin in PLUGINS:
-        action = "update" if plugin in installed else "install"
-        subprocess.run(["claude", "plugin", action, plugin], check=True)
+    # installed - branch so re-runs stay current either way. This also
+    # resolves the chrome-devtools-mcp dependency declared in plugin.json.
+    action = "update" if PLUGIN_ID in _installed_plugin_ids() else "install"
+    subprocess.run(["claude", "plugin", action, PLUGIN_ID], check=True)
 
 
 if __name__ == "__main__":
