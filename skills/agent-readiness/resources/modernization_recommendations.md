@@ -248,10 +248,14 @@ repos:
 
 | Scenario | Recommended | Notes |
 | --- | --- | --- |
-| No agent context | Add `AGENTS.md` | `AGENTS.md` is the recommended universal entry file for any IDE or AI agent (supported by Antigravity since March 9, 2026). Content must reference README/docs, not restate them. |
+| No agent context | Add `AGENTS.md` | `AGENTS.md` is the recommended cross-tool entry file for any IDE or AI agent (supported by Antigravity since March 9, 2026). Content must reference README/docs, not restate them. |
+| Claude-only setup wanting cross-tool reach | Add `AGENTS.md`, have `CLAUDE.md` import or symlink it | Claude Code reads `CLAUDE.md` / `.claude/` natively but not `AGENTS.md`. Keep one source of truth: `CLAUDE.md` imports (`@AGENTS.md`) or symlinks a shared `AGENTS.md` so both Claude and cross-tool agents load the same content. |
+| Two divergent copies (`AGENTS.md` **and** `CLAUDE.md`) | Consolidate to one source of truth | Make one import (`@path`), symlink, or generate-from the other. Divergent duplicates drift and are the two-file form of the duplication antipattern. |
 | Agent files duplicate README/docs | Refactor to reference existing docs | Replace duplicated content with pointers (e.g., "Read `docs/architecture/` for…"). Add only agent-specific items: coding patterns, architectural constraints, doc maintenance rules. |
 
-**Example** — a well-structured `AGENTS.md`:
+**Example** — a well-structured `AGENTS.md` (identical content serves as
+`CLAUDE.md`; a Claude repo can point `CLAUDE.md` at it with a single
+`@AGENTS.md` import line or a symlink):
 
 ```markdown
 # Documentation Context

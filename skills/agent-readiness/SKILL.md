@@ -202,21 +202,36 @@ Mark as ⚠️ (partial) if the documentation exists but is outdated.
 
 **D3 — Agent Context**
 
-`AGENTS.md` is the recommended universal entry file for any IDE or AI agent.
+An **agent context file** is the entry file an IDE or AI agent loads before
+acting. Two conventions are recognized as equally valid — evaluate whichever
+the repo uses, and never penalize one for not being the other:
+
+- **`AGENTS.md`** (with the `.agents/` directory) — the cross-tool standard,
+  read by most IDE/agent platforms.
+- **`CLAUDE.md`** (with the `.claude/` directory) — Claude Code's native
+  scheme; Claude does not read `AGENTS.md` natively.
+
 The **antipattern** is duplicating human-facing documentation into these
 files instead of referencing it. Agent context files should **point to**
 `README.md` and `docs/` as the single source of truth and add only
 agent-specific instructions.
 
+**Interop when both conventions coexist**: `AGENTS.md` and `CLAUDE.md` must
+resolve to a **single source of truth** — one references, imports (`@path`),
+or symlinks the other, or one is generated from the other. Two **divergent**
+copies are an antipattern (the duplication rule applied to the two-file case);
+flag them for consolidation.
+
 **Agent-specific vs general content**: Restrictions and constraints are
 **general** — they apply to both humans and agents and belong in **shared
 documentation** (contributing guide, coding patterns, README), not in agent
-context files. The evaluator must verify that restrictions found in AGENTS.md
-are flagged as **misplaced** if they are general-purpose.
+context files. The evaluator must verify that restrictions found in the agent
+context file (`AGENTS.md` / `CLAUDE.md`) are flagged as **misplaced** if they
+are general-purpose.
 
-- **Agent-specific** (belongs in AGENTS.md): doc loading instructions
-  ("Read `docs/architecture.md` before modifying core modules"), workflow
-  commands, tool preferences, context loading order.
+- **Agent-specific** (belongs in `AGENTS.md` / `CLAUDE.md`): doc loading
+  instructions ("Read `docs/architecture.md` before modifying core modules"),
+  workflow commands, tool preferences, context loading order.
 - **General** (belongs in shared docs): forbidden patterns, deprecated modules,
   naming conventions, required review processes, code style rules.
 
@@ -233,9 +248,9 @@ and contributing guides should be read before planning and implementing.
 
 | #    | Sub-criterion             | What to Look For                                                                              | Where                       |
 | ---- | ------------------------- | --------------------------------------------------------------------------------------------- | --------------------------- |
-| D3.1 | Agent workflow references | Pointers to warm-memory docs, task-specific loading instructions, workflow commands            | Agent context (`AGENTS.md`) |
-| D3.2 | Doc maintenance rules     | Instructions to keep docs in sync when modifying code                                         | Agent context (`AGENTS.md`) |
-| D3.3 | Minimal agent skills      | At least code review and documentation skills/subagents in `.agents/skills/` or `.agents/workflows/` | Agent context               |
+| D3.1 | Agent workflow references | Pointers to warm-memory docs, task-specific loading instructions, workflow commands            | Agent context (`AGENTS.md` / `CLAUDE.md`) |
+| D3.2 | Doc maintenance rules     | Instructions to keep docs in sync when modifying code                                         | Agent context (`AGENTS.md` / `CLAUDE.md`) |
+| D3.3 | Minimal agent skills      | At least code review and documentation skills/subagents in `.agents/skills/` or `.agents/workflows/` (or the Claude equivalents `.claude/skills/`, `.claude/commands/`, `.claude/agents/`) | Agent context               |
 
 **D3.3 — Minimal agent skills**:
 
@@ -261,8 +276,8 @@ agent context (D3.2).
 
 **Evaluating content accuracy**: Verify that agent context files reference
 existing docs rather than restating them. Check that documented constraints
-match the actual codebase state. Flag general restrictions in AGENTS.md as
-misplaced.
+match the actual codebase state. Flag general restrictions in the agent
+context file (`AGENTS.md` / `CLAUDE.md`) as misplaced.
 
 **D7 — Changelog**:
 
@@ -417,7 +432,6 @@ are filtered by the repository type.
 | P2 Feature flags       | ✅    | ✅  | ✅      | N/A | N/A     | N/A   | N/A     | ⚠️    |
 | P3 A/B testing         | ✅    | ✅  | N/A     | N/A | N/A     | N/A   | N/A     | N/A   |
 
-
 > [!NOTE]
 > ⚠️ in the matrix means the criterion **applies** but is commonly optional —
 > still scored normally. Only **N/A** entries are excluded from the denominator.
@@ -456,7 +470,6 @@ for the project type and repository type):
 | L4 Optimized | L3 + ≥ 80% of L3 criteria (S4-S5, S7, B3-B4, T5-T6, T9, X2-X3) |
 | L5 Autonomous | L4 + ≥ 80% of L4 criteria (S6, B5, T7-T8, D5.1, D5.2, D6-D8, E4-E5, O3-O5, X4-X5, K3-K4, P1-P3) |
 
-
 Exclude N/A criteria from each level's set before computing the percentage.
 
 ### Step 4 — Generate the Enhancement Plan
@@ -469,10 +482,14 @@ report. The plan must follow these rules:
    the modern equivalent (see `resources/modernization_recommendations.md`)
    rather than adding a parallel tool. Mark legacy as "replace" not "add
    alongside".
-3. **Agent context**: Recommend `AGENTS.md` as the universal entry file for any
-   IDE or AI agent. Use `.agents/workflows/` or equivalent for repeatable
-   commands. Agent files must **reference** `README.md` and `docs/` as the
-   single source of truth — never duplicate their content.
+3. **Agent context**: When no agent context exists, recommend `AGENTS.md` as
+   the cross-tool default entry file (with `.agents/workflows/` or equivalent
+   for repeatable commands). When the repo is Claude-centric or already uses
+   `.claude/`, recommend `CLAUDE.md` (with `.claude/skills/`, `.claude/commands/`,
+   `.claude/agents/`); for cross-tool reach, have it import (`@AGENTS.md`) or
+   symlink a shared `AGENTS.md` rather than duplicating content. Agent files
+   must **reference** `README.md` and `docs/` as the single source of truth —
+   never duplicate their content.
 4. **Minimal invasiveness**: Prefer config/documentation changes over code
    changes. Code changes only when a modernization migration requires it (e.g.,
    switching test framework).
@@ -500,7 +517,6 @@ Save the completed evaluation to the target repository for historical tracking.
    Where `YYYY-MM-DDThh-mm` is the evaluation datetime (use the local time of
    the evaluation, with colons replaced by hyphens for filesystem
    compatibility). Example: `agent-readiness_2026-03-09T08-37.md`.
-
 3. Fill the `Date` field in the Ecosystem table with the same datetime value in
    ISO 8601 format (`YYYY-MM-DDThh:mm`).
 

@@ -150,7 +150,7 @@ Verify `docs/` has a `README.md` index, design docs, and coding patterns.
 
 **D3 Score**: ___ / 3 → ✅ (3/3) / ⚠️ (2/3 or misplaced restrictions) / ❌ (≤1 or duplicates)
 
-**Agent-specific vs general check**: <!-- Flag any general restrictions found in AGENTS.md -->
+**Agent-specific vs general check**: <!-- Flag any general restrictions found in the agent context file (AGENTS.md / CLAUDE.md) -->
 
 **Accuracy notes**: <!-- Document any mismatches between docs and actual config -->
 

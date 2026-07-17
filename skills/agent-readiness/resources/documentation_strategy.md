@@ -67,7 +67,7 @@ model helps evaluators and authors understand where information should live.
 
 | Memory tier | Files | Agent behavior | Rationale |
 | --- | --- | --- | --- |
-| **Hot** (always loaded) | README.md, agent context files (`.agents/rules/`, `AGENTS.md`) | Read on every task before making changes | Small, high-signal content the agent needs for every interaction: commands, stack, constraints |
+| **Hot** (always loaded) | README.md, agent context files (`AGENTS.md` + `.agents/rules/`, or `CLAUDE.md` + `.claude/`) | Read on every task before making changes | Small, high-signal content the agent needs for every interaction: commands, stack, constraints |
 | **Warm** (loaded on demand) | `docs/` directory, inline code comments | Read when a task touches the relevant area | Larger, topic-specific content; loading everything would waste context window |
 
 Agent context files bridge the two tiers: they live in hot memory and **point
