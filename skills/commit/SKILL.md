@@ -14,12 +14,16 @@ description: >-
 
 - First line: imperative, concise, states the effect of the change.
   Conventional Commits format if the repo uses it.
-- Add a body only for non-obvious *why*, breaking changes, migration notes,
-  or linked issues — omit it otherwise. When a body exists, keep its why
-  paragraph and its what bullets non-redundant: each fact lives in one place,
-  and bullets never restate what `git show --stat`/`--name-status` already
-  shows (mechanical per-file enumeration) — cover only non-obvious groupings,
-  removal/rename rationale, or behavior changes.
+- Default to a subject-only commit; a body must earn its place. Add a body
+  only for non-obvious *why*, breaking changes, migration notes, or linked
+  issues — omit it otherwise. A *why* is non-obvious only when it cannot be
+  inferred from the subject line plus the diff: motivation the subject already
+  implies (e.g., that a newly-added capability was previously absent) is
+  obvious — omit it. When a body exists, keep its why paragraph and its what
+  bullets non-redundant: each fact lives in one place, and bullets never
+  restate what `git show --stat`/`--name-status` already shows (mechanical
+  per-file enumeration) — cover only non-obvious groupings, removal/rename
+  rationale, or behavior changes.
 - Reference related issues/PRs at the end of the body, not inline.
 - One file, one commit — no partial/split commits on the same file. Group
   files only when they implement a single code-level solution to a single
