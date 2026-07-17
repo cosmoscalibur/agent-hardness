@@ -71,7 +71,9 @@ gets invoked.
   `def visit_$NAME`) instead of enumerating guesses with `grep`; a single
   known literal string is still a plain `grep` case. Also prefer it when a
   text match could be a false positive — inside a comment/string, or reached
-  only through an alias.
+  only through an alias; having read a file in full doesn't substitute for a
+  repo-wide search before a signature/rename change — the two answer
+  different questions.
 - Python3: for project code — running scripts, managing dependencies — use
   `uv` exclusively (`uv run`, `uv sync`, `uv add`), never bare
   `python3`/`pip`/`poetry`. System-level Python invocations unrelated to the
