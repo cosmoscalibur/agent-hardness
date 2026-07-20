@@ -15,10 +15,9 @@ for every language in one place, with no dependency on the official
 marketplace. A standalone `.lsp.json` (rather than an inline `lspServers` block
 in `plugin.json`) also keeps LSP config out of the version-bumped manifest.
 
-Claude Code runs **one language server per language**. Where a language needs
-capabilities a single server doesn't cover — Python formatting and lint-autofix,
-which `basedpyright` doesn't do — that gap is filled by a hook, not a second
-LSP (see [`hooks.md`](hooks.md)).
+Where a language needs capabilities its server doesn't cover — Python
+formatting and lint-autofix, which `basedpyright` doesn't do — that gap is
+filled by a hook, not a second LSP; see [`hooks.md`](hooks.md) for why.
 
 ## The declared set
 
@@ -64,7 +63,7 @@ Optional fields Claude Code also accepts: `transport` (`stdio` default or
 3. Add the language row to the table above and to the server-install section
    below.
 4. Add the row to the README's *Language Servers* table.
-5. Update the installed plugin (`claude plugin update agent-hardness@agent-hardness`)
+5. Update the installed plugin (`claude plugin update agent-harness@agent-harness`)
    and restart Claude Code; edit a file of that type and confirm the server
    attaches (diagnostics/hover appear).
 

@@ -18,14 +18,14 @@ description: >-
   declarative/procedural, idiomaticity, and verbosity rules.
 - Documentation pass: for any docs the diff adds or changes (README, `docs/`,
   docstrings, comments), verify each claim is factual and check it against
-  `AGENTS.md` §2's layer rule — no layer restating what's visible one level
-  below.
+  `agent-harness.md` §2's omission gate — no layer restating what's visible
+  one level below.
 - Adversarial pass: generate breaking inputs — null/empty, concurrency,
   reordering, partial dependency failure. Challenge every unguaranteed
   assumption. Silent omission of a feature or edge case is a valid finding,
   same as silently wrong code. When the diff changes a pattern that also
   appears elsewhere in the codebase, confirm full coverage with a structural
-  search (ast-grep) rather than eyeballing the diff — see `AGENTS.md` §4.
+  search (ast-grep) rather than eyeballing the diff — see `agent-harness.md` §4.
 - Over-engineering pass: flag excess, not just absence, per the
   `implementation` skill.
 - Performance pass, always run: algorithmic complexity, N+1 queries,

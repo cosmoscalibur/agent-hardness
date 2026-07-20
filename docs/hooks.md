@@ -3,8 +3,7 @@
 This plugin ships two `PostToolUse` hooks, one per language it auto-fixes:
 Ruff for Python, rumdl for Markdown. Hooks are set up on Claude Code only.
 They live entirely under [`hooks/`](../hooks/) — `hooks.json` plus the script
-each entry invokes — so both install with the plugin. Antigravity supports
-hooks too, but this flow does not target it.
+each entry invokes — so both install with the plugin.
 
 ## Why a hook and not a second LSP
 
@@ -46,9 +45,9 @@ version-bumped manifest). The shape mirrors Claude Code's user hooks:
   matches both edit tools. There is no way to match on the edited file's type
   here, so each hook script filters by extension itself.
 - **`hooks[].type: "command"`** runs a shell command; Claude Code passes the
-  tool payload as JSON on its stdin. Python is invoked through `uv run` per the
-  project's `uv`-only rule, and `--no-project` keeps the run isolated from any
-  surrounding project environment.
+  tool payload as JSON on its stdin. Python is invoked through `uv run` (this
+  project standardizes on `uv`), and `--no-project` keeps the run isolated from
+  any surrounding project environment.
 - **`${CLAUDE_PLUGIN_ROOT}`** resolves to the installed plugin's root directory
   — always reference bundled files through it, never a relative path.
 

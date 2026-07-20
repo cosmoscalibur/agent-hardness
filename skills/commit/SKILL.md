@@ -2,10 +2,10 @@
 name: commit
 description: >-
   Write commit messages and structure commits — imperative first line, when
-  to add a body, issue references, and one-file-one-commit grouping. Use when
-  creating a git commit after review has cleared, when asked to draft or
-  propose a commit message for approval, or when asked how to split/group
-  staged changes.
+  to add a body, issue references, and grouping so no file spans two commits.
+  Use when creating a git commit after review has cleared, when asked to
+  draft, propose, or preview a commit message or a commit grouping for
+  approval, or when asked how to split/group changes.
 ---
 
 # Commits
@@ -14,38 +14,51 @@ description: >-
 
 - First line: imperative, concise, states the effect of the change.
   Conventional Commits format if the repo uses it.
-- Default to a subject-only commit; a body must earn its place. Add a body
-  only for non-obvious *why*, breaking changes, migration notes, or linked
-  issues — omit it otherwise. A *why* is non-obvious only when it cannot be
-  inferred from the subject line plus the diff: motivation the subject already
-  implies (e.g., that a newly-added capability was previously absent) is
-  obvious — omit it. When a body exists, keep its why paragraph and its what
-  bullets non-redundant: each fact lives in one place, and bullets never
-  restate what `git show --stat`/`--name-status` already shows (mechanical
-  per-file enumeration) — cover only non-obvious groupings, removal/rename
-  rationale, or behavior changes.
+- Default to a subject-only commit. Apply `agent-harness.md` §2's omission gate,
+  decided from the change you just made — not by re-scanning the diff: can you
+  name in one clause a *why* the subject plus diff can't show — a non-obvious
+  grouping, a removal/rename reason, a breaking change, a migration note, or a
+  linked issue? No → subject-only. Yes → that clause is the body. Motivation
+  the subject already implies (e.g., that a new capability was previously
+  absent) is not such a *why*. If a body runs to bullets, each fact lives in
+  one place and none restates the file list from `git show --stat`.
+- Write for a future reader who lacks this session's context — another
+  developer, or your later self, reconstructing *why* from the diff and the
+  message alone. State the change and its rationale on their own terms; never
+  reference author-side or ephemeral context: internal plan labels ("Tier 1",
+  "phase 2"), the review or audit that prompted the work, chat shorthand, or
+  "as discussed".
 - Reference related issues/PRs at the end of the body, not inline.
-- One file, one commit — no partial/split commits on the same file. Group
-  files only when they implement a single code-level solution to a single
-  problem (e.g., a rule change plus the doc that defines it). If separating
-  the files would require reviewing them independently to understand
-  correctness, they're one commit. If the files address different problems
-  that happen to land together, split them — shared timing is not shared
-  logic.
-- Never author or co-author a commit as an agent. Don't add `Co-Authored-By`
-  trailers or otherwise attribute authorship to an AI agent, regardless of
-  default tooling behavior.
-- When describing what changed — for the message itself, a comparison to the
-  previous commit, or during a rebase/squash — diff against the actual
-  reference commit via git (e.g., `git diff <ref>`, `git show <ref>`). Never
-  rely on session/conversation memory alone: earlier changes may have
-  happened outside this session, and session context can miss or
-  misremember them.
+- No file spans two commits. A file's whole change set lands in exactly one
+  commit — never a partial or split commit of the same file across commits.
+  This is *not* "one commit per file": group as many files as belong to one
+  code-level solution to one problem (e.g., a rule change plus the doc that
+  defines it). If separating files would force reviewing them independently to
+  judge correctness, they are one commit. If files address different problems
+  that merely landed together, split them — shared timing is not shared logic.
+  When a single file legitimately carries changes for two problems it cannot
+  be split: merge those problems into one commit, or regroup the work so the
+  overlap disappears. Overlap is never resolved by a partial commit.
+- Describing what changed: the developer reviews and approves the drafted
+  message and grouping before anything commits, so that review is the
+  correctness net — draft from the changes you made this session rather than
+  re-reading full diffs by default. Always ground the file set with a cheap
+  check (`git status --porcelain` / `git diff --name-status`); it costs almost
+  nothing and is the drift detector. Escalate to a full `git diff <ref>` /
+  `git show <ref>` only when a staleness trigger fires: the cheap check shows
+  files you didn't touch, a system-reminder reports the file was modified by
+  the user or a linter/hook, you're describing work you didn't author this
+  session or that predates a context compaction, or you're on a
+  rebase/squash/amend where history differs from memory.
 
 ## Note
 
-This skill governs drafting the message — invoke it for any request to
-commit, draft, or propose one, not just the literal word "commit". Running
-`git add`/`git commit` is a separate step: never run them until the
-developer approves the drafted message, per this environment's git safety
-boundaries.
+This skill owns commits end to end — both proposing them for approval and
+executing them — and that ownership is exclusive: commit grouping and
+messaging never belong to planning or implementation, and are never decided ad
+hoc before this skill is invoked. Proposing or previewing *how* to group or
+split commits is itself part of this skill, not only writing the final
+message: invoke it for any request to commit, draft, propose, preview, or
+group commits — not just the literal word "commit". Running `git add`/`git
+commit` is the final step: never run them until the developer approves the
+drafted proposal, per this environment's git safety boundaries.

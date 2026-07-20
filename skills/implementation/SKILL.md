@@ -49,10 +49,10 @@ level without justifying fit.
   the safety net.
 - Fail fast on programmer invariants and genuinely unexpected states. Never
   silently absorb a bug signal.
-- Never fail-fast where an architectural fallback already exists (human
-  escalation, citation-only response). Degrade to the known path instead.
-  Distinguish unexpected error (fail fast) from expected domain failure with
-  a defined fallback (degrade).
+- Never fail-fast where an architectural fallback already exists (e.g. a
+  defined human-escalation or default-path fallback). Degrade to the known
+  path instead. Distinguish unexpected error (fail fast) from expected domain
+  failure with a defined fallback (degrade).
 - Prefer a plain function over a formal pattern (factory, strategy, observer)
   unless a real, non-hypothetical variation justifies it.
 - Defensive code outweighing business logic signals over-engineering.
@@ -64,24 +64,18 @@ level without justifying fit.
   Shortest working diff, fewest files — but only after understanding the
   problem. The smallest change in the wrong place is a second bug.
 - Resolution ladder — selects the technique for a task already accepted as
-  valid and in scope. It never substitutes for confirming the request
-  itself should proceed — ambiguous scope, skipped tests, or an invented
-  business rule are reasons to stop and ask, not inputs to the ladder. Stop
-  at the first rung that holds:
-  1. Does this need to exist? Speculative → skip, say so in one line.
-  2. Already in this codebase? Reuse it. Look before writing — for
-     multi-site reuse checks or edits (rename, signature change, replacing a
-     call pattern), confirm every real site with a structural search
-     (ast-grep) first — see `AGENTS.md` §4.
-  3. Stdlib covers it? Use stdlib.
-  4. Native platform feature covers it (HTML input type, CSS, DB constraint)?
-     Use that.
-  5. An installed dependency covers it? Use it. Don't add a new one for a few
-     lines of code.
-  6. Fits in one line? One line.
-  7. Otherwise: minimum code that works.
-- Two same-size stdlib options: pick the one correct on edge cases, not the
-  smaller one.
+  valid and in scope. It never substitutes for confirming the request itself
+  should proceed — ambiguous scope, skipped tests, or an invented business
+  rule are reasons to stop and ask, not inputs to the ladder. Take the first
+  that applies: reuse what's already in the codebase (before a multi-site
+  reuse check or edit — rename, signature change, replacing a call pattern —
+  confirm every real site with a structural search (ast-grep) first, see
+  `agent-harness.md` §4) → stdlib → a native platform feature (HTML input
+  type, CSS, DB constraint) → an installed dependency (use it; don't add a
+  new one for a few lines of code) → otherwise the minimum code that works.
+  Skip anything speculative and say so in one line.
+- Between two equally small stdlib options, pick the one correct on edge
+  cases, not the shorter one.
 - Well-formed but underspecified request, within approved scope: ship the
   simplest version that plausibly satisfies it, then state the gap ("Did X;
   Y covers it. Need full X? Say so."). Don't stall on a question you can
@@ -112,11 +106,12 @@ level without justifying fit.
 
 ## Verbosity
 
-- Documentation follows `AGENTS.md` §2's layer rule: comments carry the *why*
-  (design decisions, trade-offs, exceptions, non-obvious context), never a
-  restatement of what the code says (e.g., no comment listing the elements of
-  a named list being iterated); docstrings state the contract, not a paraphrase
-  of the function name.
+- Documentation follows `agent-harness.md` §2's omission gate: before writing a
+  comment or docstring, name what it adds that the code or signature can't show
+  — the *why* (design decision, trade-off, exception), or the contract's
+  non-obvious part; if you can't name it, don't write it. So: no comment
+  restating what the code says (e.g., listing the elements of a named list
+  being iterated), and no docstring paraphrasing the function name.
 - Keep names clear and concise, per the language's and codebase's own
   convention.
 
@@ -124,6 +119,9 @@ level without justifying fit.
 
 - Every new/changed function, endpoint, or rule ships with explicit types and
   minimal docs at completion — not deferred.
+- "Docs current" here excludes the release changelog fragment: it is
+  PR-scoped and created once at PR preparation (see the `pull-requests`
+  skill), not per change during implementation.
 - Every non-trivial function/rule ships with a test at completion. Skip only
   for: pure delegation with no branching or transformation,
   framework/scaffold-generated code, or trivial constant/config definitions.

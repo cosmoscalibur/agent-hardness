@@ -1,12 +1,12 @@
 # Rules and skills
 
-How to extend the always-on ruleset (`rules/AGENTS.md`) and add methodology
-skills (`skills/`) — the form each must take — and how the two supported
-clients deploy them.
+How to extend the always-on ruleset (`rules/agent-harness.md`) and add methodology
+skills (`skills/`) — the form each must take — and how they deploy on Claude
+Code.
 
-## Extending `rules/AGENTS.md`
+## Extending `rules/agent-harness.md`
 
-`rules/AGENTS.md` is a single consolidated file organized into numbered
+`rules/agent-harness.md` is a single consolidated file organized into numbered
 top-level sections (guard duty, documentation currency, register, tooling, flow
 orchestration). A rule addition must fit that form:
 
@@ -18,8 +18,8 @@ orchestration). A rule addition must fit that form:
   counterweights to training bias, so the *why* is what makes a rule hold.
 - Keep it generic and project-agnostic. Anything specific to one repository
   belongs in that repo's own `CLAUDE.md`, not here.
-- Keep it lean. `rules/AGENTS.md` is copied to `~/.claude/CLAUDE.md` and loaded
-  on every session, so every line is a standing cost — add only what must
+- Keep it lean. `rules/agent-harness.md` installs to `~/.claude/rules/` and
+  loads at session start, so every line is a standing cost — add only what must
   always apply, and move anything else into a skill.
 - Keep it factual and verifiable, and respect the layered-docs discipline the
   file itself defines (§2): don't restate what a lower layer already shows.
@@ -49,28 +49,24 @@ A skill is a directory under `skills/` whose form is fixed:
   reports a skill's projected always-on and on-invoke token cost.
 - Register the skill in the README's *Skills* table.
 
-## Per-client deployment
-
-### Antigravity
-
-`agy plugin install <repo>` auto-discovers `rules/`, `skills/`, and
-`plugin.json` from the plugin root, so both the ruleset and the skills install
-natively — no copy step, nothing for a script to add.
-
-### Claude Code
+## Deployment (Claude Code)
 
 Claude loads the skills from the installed plugin but doesn't read a plugin's
 rules file as global context, so the ruleset is deployed separately. Manually,
 that is three steps:
 
-1. Copy `rules/AGENTS.md` over `~/.claude/CLAUDE.md` — a plain overwrite;
-   `rules/AGENTS.md` is the single source of truth.
+1. Copy `rules/agent-harness.md` into `~/.claude/rules/agent-harness.md` — a
+   global rule Claude Code loads at session start (rules without `paths:`
+   frontmatter load like `CLAUDE.md`). This leaves the user's own
+   `~/.claude/CLAUDE.md` untouched — unless it is a legacy copy of this ruleset
+   (heading `Technical Strategy & Execution Rules`), which `sync.py` removes so
+   `rules/agent-harness.md` is the single source of truth.
 2. Register this repo as a marketplace:
    `claude plugin marketplace add <repo>`.
-3. Install the plugin: `claude plugin install agent-hardness@agent-hardness`
+3. Install the plugin: `claude plugin install agent-harness@agent-harness`
    (`claude plugin update …` once it's already installed). This carries the
-   skills and the bundled `.lsp.json`/`hooks/`; the ruleset copy in step 1 is
-   not part of it.
+   skills and the bundled `.lsp.json`/`hooks/`/`.mcp.json`/`settings.json`; the
+   ruleset copy in step 1 is not part of it.
 
 `scripts/sync.py` automates these three steps — adjust it there when the flow
 changes.
