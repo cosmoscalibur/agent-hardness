@@ -1,2 +1,3 @@
 __pycache__/
 .rumdl_cache
+.ruff_cache
