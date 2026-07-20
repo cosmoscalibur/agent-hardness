@@ -58,15 +58,27 @@ gets invoked.
 - Prefer a dedicated CLI over raw API calls for external services (e.g. `gh`
   for GitHub); when none is installed, suggest one rather than hand-rolling
   API requests.
-- For code search or navigation, prioritize `ast-grep` over plain-text
-  `grep` for precise AST-level matches and less context bloat. When the
-  target's exact spelling isn't known in advance (an attribute access on an
-  unknown base, a family of method names), use a structural pattern
-  (`$X.field`, `def visit_$NAME`) rather than enumerating `grep` guesses; a
-  single known literal is still a plain `grep`. Prefer it too when a text
-  match could be a false positive (in a comment/string, or reached via an
-  alias) — and reading a file in full is not a substitute for a repo-wide
-  structural search before a signature/rename change.
+- For code search and navigation, work in tiers and drop to the next only on
+  a miss:
+  1. **LSP** for code symbols — definitions, references, call sites, types,
+     imports. Use the `LSP` tool (`goToDefinition`, `findReferences`,
+     `workspaceSymbol`) rather than `grep`, which false-matches symbols in
+     comments and strings. `LSP` is often a *deferred* tool: load its schema
+     with `ToolSearch` (`select:LSP`) before the first call in a session. A
+     just-started server indexes asynchronously — the first symbol query can
+     return empty before indexing completes, so on an empty result wait
+     briefly and retry once before treating it as a miss. Drop to tier 2 only
+     on a server error, or when a retried query still returns nothing (symbol
+     genuinely absent, or dynamically typed code the server can't resolve).
+  2. **`ast-grep`** for structural patterns when the exact spelling isn't
+     known in advance (an attribute access on an unknown base, a family of
+     method names): match a pattern (`$X.field`, `def visit_$NAME`) rather
+     than enumerating `grep` guesses. Reading a file in full is not a
+     substitute for a repo-wide structural search before a signature/rename
+     change.
+  3. **`grep`** for lexical matches — a single known literal, config, docs,
+     log strings, TODOs. Scope by path or extension first to keep results
+     concise. Not for symbol definitions unless tiers 1-2 fail.
 - Use the simplest idiomatic form for standard system operations and one-off
   command invocations (`rm -r dir`, not deleting the contents and then the
   folder) unless there's an explicit reason (e.g., per-file logging). The same

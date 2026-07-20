@@ -1,9 +1,12 @@
 # Hooks (Claude Code)
 
-This plugin ships two `PostToolUse` hooks, one per language it auto-fixes:
-Ruff for Python, rumdl for Markdown. Hooks are set up on Claude Code only.
-They live entirely under [`hooks/`](../hooks/) — `hooks.json` plus the script
-each entry invokes — so both install with the plugin.
+This plugin ships hooks on Claude Code only, declared in
+[`hooks/hooks.json`](../hooks/hooks.json) and installed with the plugin:
+
+- `PostToolUse` hooks that auto-fix files on write/edit via bundled scripts —
+  see [Script pattern](#script-pattern) for the current set.
+- A `SessionStart` hook that injects context at session start — see
+  [Session-start LSP hint](#session-start-lsp-hint).
 
 ## Why a hook and not a second LSP
 
@@ -77,3 +80,20 @@ Add an entry under the appropriate event in `hooks/hooks.json`, put any script
 in `hooks/` (not `scripts/`, which is for one-off tooling like the installer),
 and reference it via `${CLAUDE_PLUGIN_ROOT}`. Invoke Python through `uv run` and
 keep the script stdlib-only so it needs no environment setup.
+
+## Session-start LSP hint
+
+The `SessionStart` entry is not a formatter and does not follow the script
+pattern above. It is a `command` hook that prints a static JSON payload with
+`hookSpecificOutput.additionalContext`, which Claude Code injects into the
+model's context at session start. Because the output is a constant, it emits
+the JSON inline via `printf` rather than spawning an interpreter through
+`uv run`.
+
+Its purpose is to counter tool-schema *deferral*: with many tools present
+(bundled MCP servers plus built-ins), Claude Code defers the `LSP` tool's
+schema, so an agent must load it with `ToolSearch (select:LSP)` before the
+first call. Injecting the directive at session start raises the salience of
+that step and reinforces the tier order in `rules/agent-harness.md` section 4.
+It is a nudge, not a guarantee — the hook cannot call `ToolSearch` itself; the
+model still has to act on the directive.

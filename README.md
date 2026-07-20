@@ -140,8 +140,8 @@ Set up by `scripts/sync.py`.
   HTML/CSS, and Rust, declared internally in `.lsp.json`. See
   [`docs/lsp.md`](docs/lsp.md) and the
   [Language Servers](#language-servers-claude-code) prerequisites above.
-- **Hooks**: `PostToolUse` hooks format and lint-fix Python (Ruff) and
-  Markdown (rumdl) on edit. See [`docs/hooks.md`](docs/hooks.md).
+- **Hooks**: auto-format/lint on edit and other lifecycle hooks. See
+  [`docs/hooks.md`](docs/hooks.md).
 - **Settings**: a bundled `settings.json` empties git/PR attribution — no AI
   co-authorship trailer or session URL on commits and pull requests.
 

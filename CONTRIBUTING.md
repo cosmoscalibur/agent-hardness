@@ -13,9 +13,9 @@ covers project structure, versioning, and cross-tool reference material.
   `CLAUDE.md` whose heading is the ruleset title).
 - `skills/<name>/SKILL.md` — the stage skills (planning, implementation, review,
   commit, pull-requests) plus the agent-readiness and ast-grep skills.
-- `hooks/` — `PostToolUse` format/lint hooks. `.lsp.json` — bundled language
-  servers. `.mcp.json` — bundled MCP servers. `settings.json` — bundled
-  settings (git/PR attribution).
+- `hooks/` — bundled Claude Code hooks (see `docs/hooks.md`). `.lsp.json` —
+  bundled language servers. `.mcp.json` — bundled MCP servers. `settings.json`
+  — bundled settings (git/PR attribution).
 - `.claude-plugin/plugin.json` — the plugin manifest (carries the version).
   `.claude-plugin/marketplace.json` — marketplace entry (no version field).
 - `docs/` — maintenance reference, kept current per `CLAUDE.md`.
