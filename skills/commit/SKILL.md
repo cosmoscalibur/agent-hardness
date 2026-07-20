@@ -29,16 +29,21 @@ description: >-
   "phase 2"), the review or audit that prompted the work, chat shorthand, or
   "as discussed".
 - Reference related issues/PRs at the end of the body, not inline.
-- No file spans two commits. A file's whole change set lands in exactly one
-  commit — never a partial or split commit of the same file across commits.
-  This is *not* "one commit per file": group as many files as belong to one
-  code-level solution to one problem (e.g., a rule change plus the doc that
-  defines it). If separating files would force reviewing them independently to
-  judge correctness, they are one commit. If files address different problems
-  that merely landed together, split them — shared timing is not shared logic.
-  When a single file legitimately carries changes for two problems it cannot
-  be split: merge those problems into one commit, or regroup the work so the
-  overlap disappears. Overlap is never resolved by a partial commit.
+- No file spans two commits: a file's whole change set lands in exactly one
+  commit, never split or partial. This is *not* "one commit per file". The unit
+  is one functional behavior — the smallest set of changes that together
+  produce one observable effect, plus the docs describing them. A part with no
+  effect on its own (a code path nothing calls yet, a config no code reads) is
+  inert alone and ships with the change that activates it. Split two parts into
+  separate commits only when each is independently effective *and* independently
+  reviewable for correctness — never on layer/mechanism (front-end/back-end,
+  code/config) or a discernible sub-topic alone, and never merely because they
+  landed in the same session. Default to the fewest commits that clear that
+  bar. When one file unavoidably carries two such problems, merge them or
+  regroup so the overlap disappears — never a partial commit.
+- A version bump or similar release bookkeeping is not its own commit: fold it
+  into the commit of the change it marks, or the last commit of a multi-commit
+  change that ships together.
 - Describing what changed: the developer reviews and approves the drafted
   message and grouping before anything commits, so that review is the
   correctness net — draft from the changes you made this session rather than
