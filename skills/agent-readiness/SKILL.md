@@ -88,33 +88,8 @@ criterion, check whether evidence exists in the repo. Mark as:
 | S6  | Import sorting              | Import sort configured (ruff `I`, eslint-plugin-import, goimports)              |
 | S7  | Linter targets changed code | Pre-commit and CI scope linting to changed files only (not full project)       |
 
-**S7 — Linter scope guidance**:
-
-Both pre-commit and CI must scope linting to **changed files** — not the full
-project and not individual changed lines.
-
-- **Pre-commit**: Runs on staged files automatically (hooks handle file
-  filtering natively).
-- **CI**: Must explicitly lint only **git-changed files** (e.g.,
-  `git diff --name-only origin/main... | xargs ruff check`). Pre-commit does
-  not apply in CI; the pipeline must replicate the scoping.
-- **Full project**: Only acceptable as a **justfile task** for manual developer
-  use (e.g., `just lint-all`). Mark as ❌ if full-project linting is in
-  pre-commit or CI.
-
-**Legacy projects with high violation volume**: When a large project has many
-pre-existing lint violations in files that are frequently touched, file-level
-linting on changed files may block unrelated PRs. In this case, recommend a
-**CI skip flag** (e.g., `[skip lint]` in commit message, or a workflow
-conditional like `if: !contains(...)`) as a **transitional** escape hatch. The
-skip flag must be paired with a lint-fix phase plan: a scheduled effort to
-resolve existing violations so the flag can be removed.
-
-> [!NOTE]
-> Line-level linting (scoping to changed lines within files) is an alternative
-> for legacy repos, but it is fragile, tool-dependent, and hard to configure
-> consistently. Teams that prefer it may use `git diff --unified=0` piped to
-> the linter, but this is not the default recommendation.
+S7 scope guidance (pre-commit/CI/full-project) and legacy-project handling:
+see `resources/pillar1_style_validation.md`.
 
 **Modernization signals**: If the repo uses isort/black/pylint separately →
 recommend consolidation to ruff. If it uses tslint → recommend eslint. See
@@ -128,23 +103,10 @@ recommend consolidation to ruff. If it uses tslint → recommend eslint. See
 | B2  | Dependencies pinned      | Lockfile exists (uv.lock, package-lock.json, Cargo.lock, go.sum) |
 | B3  | Single-command install   | One command installs all deps (uv sync, npm ci, cargo build)     |
 | B4  | Reproducible CI builds   | CI uses lockfile for dependency resolution                       |
-| B5  | Dockerized build         | Dockerfile or compose file for containerised builds. See B5 sub-checks below |
+| B5  | Dockerized build         | Dockerfile or compose file for containerised builds. See B5 in `resources/pillar2_build_system.md` |
 
-**B5 — Docker best practices**:
-
-| #    | Sub-criterion     | What to Look For                                                   |
-| ---- | ----------------- | ------------------------------------------------------------------ |
-| B5.1 | Dockerfile exists | Dockerfile or compose file present                                 |
-| B5.2 | Multi-stage build | Separate build and runtime stages to reduce image size             |
-| B5.3 | `.dockerignore`   | Excludes build artifacts, secrets, and dev files from context      |
-| B5.4 | Non-root user     | `USER` directive runs the container as a non-root user             |
-| B5.5 | Pinned base image | Base image uses a specific tag or digest, not `latest`             |
-
-**Scoring B5**:
-
-- ✅ **Pass**: B5.1 + ≥ 3 of B5.2–B5.5
-- ⚠️ **Partial**: B5.1 present but < 3 best practices
-- ❌ **Fail**: no Dockerfile
+B5 Docker best-practice sub-criteria (B5.1–B5.5) and scoring: see
+`resources/pillar2_build_system.md`.
 
 **Modernization signals**: `requirements.txt` → `pyproject.toml` + uv.
 `setup.py` only → `pyproject.toml`. `yarn` classic → `yarn berry` or `pnpm`.
@@ -163,19 +125,8 @@ recommend consolidation to ruff. If it uses tslint → recommend eslint. See
 | T8  | Test factories/fixtures   | Data generation patterns (factory_boy, fishery, faker)             |
 | T9  | TDD methodology           | Tests-first approach with both positive and negative test cases    |
 
-**T9 — TDD methodology**:
-
-Evaluate whether the project follows test-driven development discipline:
-
-- **Tests-first**: Contributing guide (D6) or coding patterns (D8) document
-  the TDD workflow (write tests before or alongside implementation).
-- **Positive tests**: Tests verify expected/happy-path behavior.
-- **Negative tests**: Tests verify error handling, edge cases, invalid inputs,
-  and failure modes (e.g., `test_*_invalid`, `test_*_error`,
-  `should_fail_when_*`).
-
-**Scoring T9**: ✅ TDD documented **and** both positive + negative patterns
-present; ⚠️ partial (one without the other); ❌ neither.
+T9 TDD-methodology evaluation (tests-first, positive/negative patterns) and
+scoring: see `resources/pillar3_testing.md`.
 
 **Modernization signals**: unittest → pytest. mocha → jest/vitest.
 
@@ -185,14 +136,14 @@ present; ⚠️ partial (one without the other); ❌ neither.
 | ---- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | D1   | README with setup instructions   | Tech stack, prerequisites, build/run/test/lint commands, project structure, env vars (see `resources/documentation_strategy.md`) |
 | D2   | Architecture documentation       | `docs/` with design docs, coding patterns, architecture. Auto-generated docs can replace manual docs; manual multi-file structure is needed only when auto-generated docs do not cover all aspects (e.g., examples, tutorials). Must include a `README.md` index (see `resources/documentation_strategy.md`) |
-| D3   | Agent context                    | See D3 sub-checks below                                                                                           |
+| D3   | Agent context                    | See D3 in `resources/pillar4_documentation.md`                                                                   |
 | D4   | Environment variables documented | `.env.example`, settings docs, or env var table in README                                                         |
 | D5   | API documentation                | Swagger/OpenAPI, or API docs (drf-spectacular, tsoa, protobuf docs). See D5 sub-checks below                      |
 | D5.1 | User manual                      | End-user documentation (applies to `desktop-app` and `cli-tool` project types; N/A for others)                    |
 | D5.2 | Auto-generated docs              | Generated documentation (cargo doc, Sphinx, typedoc, etc.) — applies to all project types                         |
 | D6   | Contributing guide               | CONTRIBUTING.md or contributing section in README                                                                 |
-| D7   | Changelog                        | See D7 sub-checks below                                                                                           |
-| D8   | Code conventions documented      | Style guide, naming conventions, patterns documented. Must include domain-specific conventions per project type (see D8 guidance below) |
+| D7   | Changelog                        | See D7 in `resources/pillar4_documentation.md`                                                                   |
+| D8   | Code conventions documented      | Style guide, naming conventions, patterns documented. Must include domain-specific conventions per project type (see D8 in `resources/pillar4_documentation.md`) |
 
 **Cross-reference accuracy**: For every Documentation criterion, verify that
 documented content matches the actual repository. Check that stated
@@ -200,122 +151,8 @@ versions match config files, documented commands are runnable, referenced
 modules and directories exist, and described patterns reflect current code.
 Mark as ⚠️ (partial) if the documentation exists but is outdated.
 
-**D3 — Agent Context**
-
-An **agent context file** is the entry file an IDE or AI agent loads before
-acting. Two conventions are recognized as equally valid — evaluate whichever
-the repo uses, and never penalize one for not being the other:
-
-- **`AGENTS.md`** (with the `.agents/` directory) — the cross-tool standard,
-  read by most IDE/agent platforms.
-- **`CLAUDE.md`** (with the `.claude/` directory) — Claude Code's native
-  scheme; Claude does not read `AGENTS.md` natively.
-
-The **antipattern** is duplicating human-facing documentation into these
-files instead of referencing it. Agent context files should **point to**
-`README.md` and `docs/` as the single source of truth and add only
-agent-specific instructions.
-
-**Interop when both conventions coexist**: `AGENTS.md` and `CLAUDE.md` must
-resolve to a **single source of truth** — one references, imports (`@path`),
-or symlinks the other, or one is generated from the other. Two **divergent**
-copies are an antipattern (the duplication rule applied to the two-file case);
-flag them for consolidation.
-
-**Agent-specific vs general content**: Restrictions and constraints are
-**general** — they apply to both humans and agents and belong in **shared
-documentation** (contributing guide, coding patterns, README), not in agent
-context files. The evaluator must verify that restrictions found in the agent
-context file (`AGENTS.md` / `CLAUDE.md`) are flagged as **misplaced** if they
-are general-purpose.
-
-- **Agent-specific** (belongs in `AGENTS.md` / `CLAUDE.md`): doc loading
-  instructions ("Read `docs/architecture.md` before modifying core modules"),
-  workflow commands, tool preferences, context loading order.
-- **General** (belongs in shared docs): forbidden patterns, deprecated modules,
-  naming conventions, required review processes, code style rules.
-
-**Hot / warm memory model** (see `resources/documentation_strategy.md`):
-README.md and agent context files are **hot memory** — loaded on every task.
-`docs/` is **warm memory** — loaded on demand when the task touches that area.
-Agent context files bridge the two tiers: they live in hot memory and point to
-warm memory so the agent knows where to look for deeper context.
-
-D3 evaluates whether agent context files provide the right agent-specific
-additions on top of the shared documentation (D1 + D2). Content that belongs in
-README or `docs/` is evaluated under D1 and D2 respectively. Coding patterns
-and contributing guides should be read before planning and implementing.
-
-| #    | Sub-criterion             | What to Look For                                                                              | Where                       |
-| ---- | ------------------------- | --------------------------------------------------------------------------------------------- | --------------------------- |
-| D3.1 | Agent workflow references | Pointers to warm-memory docs, task-specific loading instructions, workflow commands            | Agent context (`AGENTS.md` / `CLAUDE.md`) |
-| D3.2 | Doc maintenance rules     | Instructions to keep docs in sync when modifying code                                         | Agent context (`AGENTS.md` / `CLAUDE.md`) |
-| D3.3 | Minimal agent skills      | At least code review and documentation skills/subagents in `.agents/skills/` or `.agents/workflows/` (or the Claude equivalents `.claude/skills/`, `.claude/commands/`, `.claude/agents/`) | Agent context               |
-
-**D3.3 — Minimal agent skills**:
-
-The repo should provide at least two codified skills/subagents: **code review**
-and **documentation**. These guide agents in repeatable tasks and reference
-agent-readiness criteria as their quality baseline.
-
-*Code review skill* should cover: lint/format compliance (S1–S3, S5), scoped to
-changed files (S7), tests pass + coverage (T1, T4–T6), changelog fragment
-(D7.2), doc maintenance (D3.2), PR template compliance (K2).
-
-*Documentation skill* should cover: README currency (D1), architecture docs
-(D2), code conventions (D8), API docs (D5, D5.2), changelog fragment (D7.2),
-agent context (D3.2).
-
-**Scoring D3**:
-
-- ✅ **Pass**: all 3 sub-criteria present with accurate, current content
-- ⚠️ **Partial**: 2 of 3 present, or content exists but is outdated; or general
-  restrictions are placed in agent context files instead of shared documentation
-- ❌ **Fail**: ≤ 1 present, or agent files duplicate README/docs instead of
-  adding agent-specific instructions
-
-**Evaluating content accuracy**: Verify that agent context files reference
-existing docs rather than restating them. Check that documented constraints
-match the actual codebase state. Flag general restrictions in the agent
-context file (`AGENTS.md` / `CLAUDE.md`) as misplaced.
-
-**D7 — Changelog**:
-
-| #    | Sub-criterion             | What to Look For                                                  |
-| ---- | ------------------------- | ----------------------------------------------------------------- |
-| D7.1 | Changelog exists          | `CHANGELOG.md` or release notes present                           |
-| D7.2 | Progressive fragments     | Fragment directory (`changelog.d/`, `newsfragments/`) with per-PR entries, consolidated before release |
-
-The fragment pattern is **manual** (no specific tool required) — agents create
-fragments per PR, agents or release workflows consolidate before release. The
-contributing guide (D6) must document the fragment creation process.
-
-**Scoring D7**: ✅ D7.1 + D7.2; ⚠️ only `CHANGELOG.md` without fragment
-workflow; ❌ no changelog.
-
-**D8 — Code conventions**:
-
-Conventions must cover general coding standards (style guide, naming, patterns)
-**and** the project's domain-specific quality standards, so that agents and
-contributors produce consistent, correct output.
-
-**Project-type convention recommendations** (evaluator guidance — these inform
-D8 completeness, not scored as separate criteria):
-
-| Project type   | Recommended convention topics                                                                         |
-| -------------- | ----------------------------------------------------------------------------------------------------- |
-| `cli-tool`     | CLI UX patterns: help text, exit codes, stdout/stderr separation, `--no-color` / `NO_COLOR`, signal handling |
-| `web-app`      | Accessibility standards (WCAG target level), component patterns, responsive design guidelines          |
-| `desktop-app`  | Accessibility standards (WCAG target level), platform conventions, keyboard navigation                 |
-| `library`      | Versioning policy (semver), deprecation strategy, public API surface, backward compatibility           |
-| `ai/ml`        | Model documentation standards (model cards), data conventions, reproducibility requirements            |
-| `agent`        | Behavior contracts, tool inventory, safety boundaries, escalation rules                               |
-| `qa-automation`| Test strategy conventions, naming, organization, test data management                                 |
-| `cloud-service`| Infrastructure conventions, resource naming, environment promotion strategy                           |
-
-**Scoring D8**: ✅ general conventions **and** domain-specific conventions
-documented; ⚠️ general conventions present but domain-specific topics missing;
-❌ no conventions documented.
+D3 Agent Context, D7 Changelog, and D8 Code conventions detail (sub-criteria,
+scoring, and evaluator guidance): see `resources/pillar4_documentation.md`.
 
 #### Pillar 5: Dev Environment
 
@@ -347,58 +184,21 @@ documented; ⚠️ general conventions present but domain-specific topics missin
 | X4  | Secret scanning                   | GitHub secret scanning, gitleaks, or trufflehog                                   |
 | X5  | Branch protection                 | Require PR reviews, status checks (GitHub setting — note if cannot audit locally) |
 
-**X3 — Review cooldown**: Dependency update PRs (Dependabot, Renovate) should be
-configured with a **review cooldown between 15 days and 2 months** (default:
-15 days) to batch reviews and reduce churn. This is the delay before the team
-acts on a dependency update PR — not the check frequency. Evaluate whether the
-project configures a review schedule or auto-merge delay. Mark as ⚠️ if scanning
-exists but PRs are reviewed immediately with no batching strategy.
+X3 dependency-update review-cooldown guidance: see
+`resources/pillar7_security.md`.
 
 #### Pillar 8: Task Discovery
 
 | #   | Criterion                | What to Look For                                                      |
 | --- | ------------------------ | --------------------------------------------------------------------- |
-| K1  | Issue templates          | `.github/ISSUE_TEMPLATE/` directory with templates. See K1 guidance below |
-| K2  | PR template              | `.github/pull_request_template.md`. See K2 sub-checks below              |
-| K3  | Issue labeling system    | `.github/labels.yml` or documented label taxonomy. See K3 guidance below  |
+| K1  | Issue templates          | `.github/ISSUE_TEMPLATE/` directory with templates. See K1 in `resources/pillar8_task_discovery.md` |
+| K2  | PR template              | `.github/pull_request_template.md`. See K2 in `resources/pillar8_task_discovery.md` |
+| K3  | Issue labeling system    | `.github/labels.yml` or documented label taxonomy. See K3 in `resources/pillar8_task_discovery.md` |
 | K4  | Project board / tracking | Link to project board or tracking tool                                |
 
-**K1 — Issue template content guidance** (per repo type):
-
-- `issues-only` / `both` → Must have at minimum **bug report** and **feature
-  request** templates with structured fields (description, steps to reproduce,
-  expected behavior). ✅ if both exist with structured fields; ⚠️ if only one
-  template or unstructured; ❌ if no templates.
-- `pr-only` → K1 is **N/A**.
-
-**K2 — PR template content quality** (per repo type):
-
-| #    | Sub-criterion       | What to Look For                                                         |
-| ---- | ------------------- | ------------------------------------------------------------------------ |
-| K2.1 | Issue link          | Template includes issue link placeholder (`Closes #...` or `Related issue:`) |
-| K2.2 | Template content    | Description section, testing checklist, and changelog fragment reminder   |
-
-- `pr-only` / `both` → K2 evaluates existence **and** content (K2.1 + K2.2).
-- `issues-only` → K2 is **N/A**.
-
-**Scoring K2**: ✅ K2.1 + K2.2; ⚠️ template exists but missing sub-criteria;
-❌ no template.
-
-**K3 — Label consistency** (per repo type):
-
-Labels must be semantically consistent with the repo type:
-
-- `issues-only` → labels describe issue nature: `bug`, `feature`,
-  `enhancement`, `fix` (report doesn't warrant work). Labels like
-  `ready-for-review` don't make sense here.
-- `pr-only` → labels describe PR workflow/type: `bug`, `feature`,
-  `breaking-change`, `ready-for-review`, `needs-tests`. Labels like `fix`
-  (issue triage) don't apply. `bug`/`feature` are valid on PRs to clarify
-  the type of change.
-- `both` → labels span both categories.
-
-The evaluator should flag labels semantically mismatched for the repo type.
-Mark as ⚠️ if labels exist but include mismatched entries.
+K1 issue-template guidance, K2 PR-template sub-criteria and scoring, and K3
+label-consistency guidance (all per repo type): see
+`resources/pillar8_task_discovery.md`.
 
 #### Pillar 9: Product & Experimentation
 

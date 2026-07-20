@@ -201,7 +201,7 @@ repos:
 
 | Legacy | Modern | Migration Notes |
 | --- | --- | --- |
-| Manual `CHANGELOG.md` edits | `changelog.d/` fragment directory | Fragment-per-PR avoids merge conflicts. Agent creates fragments, consolidates before release. Optional tooling: towncrier, scriv, changie. |
+| Manual `CHANGELOG.md` edits | `changelog.d/` fragment directory | One fragment per PR/session (not per commit/change) avoids merge conflicts. Agent creates the fragment, consolidates before release. Follow the repo's documented methodology if any; else the single-file default. Optional tooling: towncrier, scriv, changie. |
 | No changelog | `CHANGELOG.md` + fragment workflow | Start with fragment pattern from day one. Document process in contributing guide. |
 
 ### Security
@@ -248,7 +248,7 @@ repos:
 
 | Scenario | Recommended | Notes |
 | --- | --- | --- |
-| No agent context | Add `AGENTS.md` | `AGENTS.md` is the recommended cross-tool entry file for any IDE or AI agent (supported by Antigravity since March 9, 2026). Content must reference README/docs, not restate them. |
+| No agent context | Add `AGENTS.md` | `AGENTS.md` is the recommended cross-tool entry file for any IDE or AI agent; `CLAUDE.md` is Claude Code's native equivalent. Content must reference README/docs, not restate them. |
 | Claude-only setup wanting cross-tool reach | Add `AGENTS.md`, have `CLAUDE.md` import or symlink it | Claude Code reads `CLAUDE.md` / `.claude/` natively but not `AGENTS.md`. Keep one source of truth: `CLAUDE.md` imports (`@AGENTS.md`) or symlinks a shared `AGENTS.md` so both Claude and cross-tool agents load the same content. |
 | Two divergent copies (`AGENTS.md` **and** `CLAUDE.md`) | Consolidate to one source of truth | Make one import (`@path`), symlink, or generate-from the other. Divergent duplicates drift and are the two-file form of the duplication antipattern. |
 | Agent files duplicate README/docs | Refactor to reference existing docs | Replace duplicated content with pointers (e.g., "Read `docs/architecture/` for…"). Add only agent-specific items: coding patterns, architectural constraints, doc maintenance rules. |
